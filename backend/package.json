@@ -1,0 +1,46 @@
+{
+  "name": "the-all-in-one-app-backend",
+  "version": "1.0.0",
+  "description": "Backend API for The All-in-One App — Cherry Computer Ltd.",
+  "author": "Dr. Ahmad Mateen Ishanzai <cherry@cherrycomputer.ltd>",
+  "company": "Cherry Computer Ltd.",
+  "license": "MIT",
+  "private": true,
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "test": "jest --testPathPattern=src/__tests__",
+    "lint": "eslint src --ext .js",
+    "seed": "node src/scripts/seed.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "mongoose": "^8.1.1",
+    "ioredis": "^5.3.2",
+    "jsonwebtoken": "^9.0.2",
+    "bcryptjs": "^2.4.3",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "morgan": "^1.10.0",
+    "compression": "^1.7.4",
+    "express-rate-limit": "^7.1.5",
+    "axios": "^1.6.7",
+    "socket.io": "^4.6.1",
+    "joi": "^17.12.0",
+    "dotenv": "^16.4.1",
+    "uuid": "^9.0.0",
+    "dayjs": "^1.11.10",
+    "winston": "^3.11.0",
+    "multer": "^1.4.5-lts.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.3",
+    "jest": "^29.7.0",
+    "supertest": "^6.3.4",
+    "eslint": "^8.56.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
