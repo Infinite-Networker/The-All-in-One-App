@@ -1,188 +1,76 @@
 /**
- * The All-in-One App — Authentication Middleware
+ * The All-in-One App — Auth Middleware
  * Cherry Computer Ltd.
  *
- * JWT verification, rate limiting, and request validation.
- * Security isn't an afterthought here — it's the foundation.
+ * JWT verification, rate limiting, and request logging middleware.
  */
+
+'use strict';
 
 const jwt = require('jsonwebtoken');
-const rateLimit = require('express-rate-limit');
-const { getRedis } = require('../config/database');
-const User = require('../models/User');
 
-// ─────────────────────────────────────────────────────────────────────────────
-// JWT AUTHENTICATION
-// ─────────────────────────────────────────────────────────────────────────────
+// ─── JWT Authentication ───────────────────────────────────────────────────
 
 /**
- * Verify JWT and attach user to request.
+ * authenticate
+ * Verifies the Bearer JWT in the Authorization header.
+ * Attaches decoded user data to req.user.
  */
-const authenticate = async (req, res, next) => {
+function authenticate(req, res, next) {
+  const authHeader = req.headers.authorization;
+  if (!authHeader?.startsWith('Bearer ')) {
+    return res.status(401).json({ error: 'No authentication token provided' });
+  }
+
+  const token = authHeader.slice(7);
   try {
-    const authHeader = req.headers.authorization;
-    if (!authHeader?.startsWith('Bearer ')) {
-      return res.status(401).json({
-        success: false,
-        error: 'Authentication required. Please log in.',
-      });
-    }
-
-    const token = authHeader.split(' ')[1];
-
-    // Check if token is blacklisted (logout / revocation)
-    const redis = getRedis();
-    const isBlacklisted = await redis.get(`blacklist:${token}`);
-    if (isBlacklisted) {
-      return res.status(401).json({ success: false, error: 'Token has been revoked.' });
-    }
-
-    // Verify JWT signature and expiry
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-    // Load user (check they still exist and account is active)
-    const user = await User.findById(decoded.userId).select('+passwordChangedAt');
-    if (!user || !user.isActive) {
-      return res.status(401).json({ success: false, error: 'User not found or account deactivated.' });
-    }
-
-    // Check if password was changed after the token was issued
-    if (user.passwordChangedAt) {
-      const tokenIssuedAt = decoded.iat * 1000;
-      if (user.passwordChangedAt.getTime() > tokenIssuedAt) {
-        return res.status(401).json({
-          success: false,
-          error: 'Password recently changed. Please log in again.',
-        });
-      }
-    }
-
-    req.user = user;
-    req.userId = user._id.toString();
+    req.user = { id: decoded.sub, email: decoded.email };
     next();
-
-  } catch (error) {
-    if (error.name === 'JsonWebTokenError') {
-      return res.status(401).json({ success: false, error: 'Invalid authentication token.' });
+  } catch (err) {
+    if (err.name === 'TokenExpiredError') {
+      return res.status(401).json({ error: 'Token expired', code: 'TOKEN_EXPIRED' });
     }
-    if (error.name === 'TokenExpiredError') {
-      return res.status(401).json({ success: false, error: 'Authentication token expired.' });
-    }
-    next(error);
+    return res.status(401).json({ error: 'Invalid token' });
   }
-};
+}
 
-// ─────────────────────────────────────────────────────────────────────────────
-// RATE LIMITING
-// ─────────────────────────────────────────────────────────────────────────────
+// ─── Rate Limiter ─────────────────────────────────────────────────────────
 
-/**
- * General API rate limiter — 100 requests per 15 minutes per IP.
- */
-const generalLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 100,
-  standardHeaders: true,
-  legacyHeaders: false,
-  message: {
-    success: false,
-    error: 'Too many requests. Please slow down and try again shortly.',
-  },
-});
+const requestCounts = new Map(); // In-memory for dev — use Redis in production
+const WINDOW_MS     = 60 * 1000; // 1 minute
+const MAX_REQUESTS  = 60;
 
 /**
- * Stricter limiter for auth endpoints — 10 attempts per 15 minutes.
+ * rateLimiter
+ * Simple in-memory rate limiter. In production, this is replaced
+ * by express-rate-limit backed by Redis for distributed enforcement.
  */
-const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 10,
-  standardHeaders: true,
-  legacyHeaders: false,
-  message: {
-    success: false,
-    error: 'Too many authentication attempts. Please wait before trying again.',
-  },
-});
+function rateLimiter(req, res, next) {
+  const ip = req.ip || req.connection.remoteAddress;
+  const key = `${ip}:${Math.floor(Date.now() / WINDOW_MS)}`;
 
-/**
- * Engagement-specific limiter — per user, not per IP.
- * Respects platform-specific rate limits.
- */
-const engagementLimiter = async (req, res, next) => {
-  if (!req.userId) return next();
+  const count = (requestCounts.get(key) || 0) + 1;
+  requestCounts.set(key, count);
 
-  try {
-    const redis = getRedis();
-    const key = `engagement_limit:${req.userId}:${req.params.platformId || 'global'}`;
-    const windowSeconds = 3600; // 1 hour
-    const maxActions = req.user?.preferences?.rateLimitPerPlatform || 100;
-
-    const current = await redis.incr(key);
-    if (current === 1) {
-      await redis.expire(key, windowSeconds);
-    }
-
-    const ttl = await redis.ttl(key);
-    res.setHeader('X-RateLimit-Limit', maxActions);
-    res.setHeader('X-RateLimit-Remaining', Math.max(0, maxActions - current));
-    res.setHeader('X-RateLimit-Reset', Math.floor(Date.now() / 1000) + ttl);
-
-    if (current > maxActions) {
-      return res.status(429).json({
-        success: false,
-        error: `Engagement rate limit reached (${maxActions}/hour). Resets in ${Math.ceil(ttl / 60)} minutes.`,
-        retryAfter: ttl,
-      });
-    }
-
-    next();
-  } catch (error) {
-    // Redis failure should not block engagement — fail open
-    console.error('Rate limiter error (failing open):', error.message);
-    next();
-  }
-};
-
-// ─────────────────────────────────────────────────────────────────────────────
-// PLATFORM AUTHORISATION
-// ─────────────────────────────────────────────────────────────────────────────
-
-/**
- * Verify the user has a connected account for the requested platform.
- */
-const requirePlatformConnection = (platformId) => (req, res, next) => {
-  const platform = req.user?.getPlatformConnection(platformId || req.params.platformId);
-  if (!platform) {
-    return res.status(403).json({
-      success: false,
-      error: `No connected ${platformId || req.params.platformId} account. Please connect in the Accounts screen.`,
+  // Clean up stale keys every 100 requests (approximate)
+  if (count % 100 === 0) {
+    const cutoff = `${ip}:${Math.floor(Date.now() / WINDOW_MS) - 2}`;
+    requestCounts.forEach((_, k) => {
+      if (k < cutoff) requestCounts.delete(k);
     });
   }
-  req.platformConnection = platform;
-  next();
-};
 
-// ─────────────────────────────────────────────────────────────────────────────
-// REQUEST VALIDATION
-// ─────────────────────────────────────────────────────────────────────────────
-
-const validateBody = (schema) => (req, res, next) => {
-  const { error } = schema.validate(req.body, { abortEarly: false, stripUnknown: true });
-  if (error) {
-    return res.status(400).json({
-      success: false,
-      error: 'Validation failed',
-      details: error.details.map(d => ({ field: d.path.join('.'), message: d.message })),
+  if (count > MAX_REQUESTS) {
+    return res.status(429).json({
+      error:      'Too many requests',
+      retryAfter: WINDOW_MS / 1000,
     });
   }
-  next();
-};
 
-module.exports = {
-  authenticate,
-  generalLimiter,
-  authLimiter,
-  engagementLimiter,
-  requirePlatformConnection,
-  validateBody,
-};
+  res.setHeader('X-RateLimit-Limit',     MAX_REQUESTS);
+  res.setHeader('X-RateLimit-Remaining', Math.max(0, MAX_REQUESTS - count));
+  next();
+}
+
+module.exports = { authenticate, rateLimiter };

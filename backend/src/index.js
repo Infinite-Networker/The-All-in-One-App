@@ -1,222 +1,142 @@
 /**
- * The All-in-One App — Backend Entry Point
+ * The All-in-One App — Backend Server Entry Point
  * Cherry Computer Ltd.
  *
- * Node.js + Express server powering the All-in-One App.
- * Designed for scalability, security, and real-time performance.
+ * Express.js server with WebSocket support, Redis caching,
+ * MongoDB persistence, and OAuth 2.0 platform integrations.
  *
- * Author: Dr. Ahmad Mateen Ishanzai
- * Organisation: Cherry Computer Ltd.
+ * "One Tap. Every Platform. Zero Friction."
  */
 
-require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
-const helmet = require('helmet');
-const morgan = require('morgan');
-const http = require('http');
-const { Server: SocketIO } = require('socket.io');
-const compression = require('compression');
+'use strict';
+
+const express    = require('express');
+const http       = require('http');
+const cors       = require('cors');
+const helmet     = require('helmet');
+const morgan     = require('morgan');
+const { Server } = require('socket.io');
 
 const { connectMongoDB, connectRedis } = require('./config/database');
-const { generalLimiter } = require('./middleware/auth');
+const { authenticate }                 = require('./middleware/auth');
+const logger                           = require('./middleware/logger');
 
-// ─────────────────────────────────────────────────────────────────────────────
-// APP SETUP
-// ─────────────────────────────────────────────────────────────────────────────
+// ─── Route Imports ──────────────────────────────────────────────────────────
+const authRoutes       = require('./routes/auth');
+const feedRoutes       = require('./routes/feed');
+const engagementRoutes = require('./routes/engagement');
+const analyticsRoutes  = require('./routes/analytics');
 
-const app = express();
+// ─── App Setup ──────────────────────────────────────────────────────────────
+const app    = express();
 const server = http.createServer(app);
 
-const io = new SocketIO(server, {
+const PORT = process.env.PORT || 5000;
+const NODE_ENV = process.env.NODE_ENV || 'development';
+
+// ─── Socket.IO ──────────────────────────────────────────────────────────────
+const io = new Server(server, {
   cors: {
-    origin: process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000'],
+    origin:  process.env.CLIENT_ORIGIN || '*',
     methods: ['GET', 'POST'],
   },
-  transports: ['websocket', 'polling'],
 });
 
-// Make io accessible to controllers via app.locals
-app.locals.io = io;
+// Real-time engagement result broadcasting
+io.on('connection', (socket) => {
+  console.log(`[WS] Client connected: ${socket.id}`);
 
-// ─────────────────────────────────────────────────────────────────────────────
-// MIDDLEWARE
-// ─────────────────────────────────────────────────────────────────────────────
+  socket.on('subscribe:feed', (userId) => {
+    socket.join(`feed:${userId}`);
+    console.log(`[WS] ${socket.id} subscribed to feed:${userId}`);
+  });
 
-// Security headers
+  socket.on('disconnect', () => {
+    console.log(`[WS] Client disconnected: ${socket.id}`);
+  });
+});
+
+// Attach io to app so controllers can emit events
+app.set('io', io);
+
+// ─── Middleware Stack ────────────────────────────────────────────────────────
 app.use(helmet({
-  contentSecurityPolicy: {
-    directives: {
-      defaultSrc: ["'self'"],
-      styleSrc: ["'self'", "'unsafe-inline'"],
-    },
-  },
+  contentSecurityPolicy: false, // Configured separately for mobile API
 }));
 
-// CORS
 app.use(cors({
-  origin: (origin, callback) => {
-    const allowed = process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000'];
-    if (!origin || allowed.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error('CORS: Origin not allowed'));
-    }
-  },
+  origin:      process.env.CLIENT_ORIGIN || '*',
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Platform-Token'],
 }));
 
-// Request parsing
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use(express.json({ limit: '1mb' }));
+app.use(express.urlencoded({ extended: true, limit: '1mb' }));
+app.use(morgan(NODE_ENV === 'production' ? 'combined' : 'dev'));
+app.use(logger);
 
-// Compression
-app.use(compression());
-
-// Logging
-app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
-
-// Rate limiting
-app.use('/api', generalLimiter);
-
-// ─────────────────────────────────────────────────────────────────────────────
-// ROUTES
-// ─────────────────────────────────────────────────────────────────────────────
-
-app.use('/api/auth', require('./routes/auth'));
-app.use('/api/engagement', require('./routes/engagement'));
-app.use('/api/feed', require('./routes/feed'));
-app.use('/api/analytics', require('./routes/analytics'));
-app.use('/api/accounts', require('./routes/accounts'));
-app.use('/api/proxy', require('./routes/proxy'));
-
-// Health check endpoint
+// ─── Health Check ───────────────────────────────────────────────────────────
 app.get('/health', (req, res) => {
   res.json({
-    status: 'healthy',
-    service: 'The All-in-One App API',
-    company: 'Cherry Computer Ltd.',
-    version: process.env.npm_package_version || '1.0.0',
+    status:   'OK',
+    app:      'The All-in-One App',
+    company:  'Cherry Computer Ltd.',
+    version:  '1.0.0',
+    env:      NODE_ENV,
+    uptime:   process.uptime(),
     timestamp: new Date().toISOString(),
-    environment: process.env.NODE_ENV || 'development',
-    uptime: Math.floor(process.uptime()),
   });
 });
 
-// API root info
-app.get('/api', (req, res) => {
-  res.json({
-    service: 'The All-in-One App · REST API',
-    company: 'Cherry Computer Ltd.',
-    version: '1.0.0',
-    author: 'Dr. Ahmad Mateen Ishanzai',
-    documentation: '/api/docs',
-    endpoints: {
-      auth: '/api/auth',
-      engagement: '/api/engagement',
-      feed: '/api/feed',
-      analytics: '/api/analytics',
-      accounts: '/api/accounts',
-    },
-  });
-});
+// ─── API Routes ─────────────────────────────────────────────────────────────
+app.use('/api/auth',       authRoutes);
+app.use('/api/feed',       authenticate, feedRoutes);
+app.use('/api/engagement', authenticate, engagementRoutes);
+app.use('/api/analytics',  authenticate, analyticsRoutes);
 
-// 404 handler
+// ─── 404 Handler ────────────────────────────────────────────────────────────
 app.use((req, res) => {
   res.status(404).json({
-    success: false,
-    error: `Route ${req.method} ${req.path} not found`,
+    error:   'Not Found',
+    path:    req.path,
+    company: 'Cherry Computer Ltd.',
   });
 });
 
-// Global error handler
+// ─── Global Error Handler ────────────────────────────────────────────────────
 app.use((err, req, res, next) => {
-  console.error('Unhandled error:', err);
-
-  const status = err.status || err.statusCode || 500;
-  const message = process.env.NODE_ENV === 'production'
-    ? 'An unexpected error occurred.'
-    : err.message;
-
-  res.status(status).json({
-    success: false,
-    error: message,
-    ...(process.env.NODE_ENV !== 'production' && { stack: err.stack }),
+  console.error('[Server Error]', err);
+  res.status(err.status || 500).json({
+    error:   err.message || 'Internal Server Error',
+    company: 'Cherry Computer Ltd.',
   });
 });
 
-// ─────────────────────────────────────────────────────────────────────────────
-// WEBSOCKET — REAL-TIME FEED SYNC
-// ─────────────────────────────────────────────────────────────────────────────
-
-io.use(async (socket, next) => {
-  // Authenticate WebSocket connections using JWT
-  const token = socket.handshake.auth?.token;
-  if (!token) return next(new Error('Authentication required'));
-
+// ─── Bootstrap ──────────────────────────────────────────────────────────────
+async function bootstrap() {
   try {
-    const jwt = require('jsonwebtoken');
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    socket.userId = decoded.userId;
-    next();
-  } catch {
-    next(new Error('Invalid token'));
+    await connectMongoDB();
+    await connectRedis();
+
+    server.listen(PORT, () => {
+      console.log('');
+      console.log('  ╔════════════════════════════════════════════════╗');
+      console.log('  ║       THE ALL-IN-ONE APP — BACKEND SERVER      ║');
+      console.log('  ║           Cherry Computer Ltd.                 ║');
+      console.log('  ╠════════════════════════════════════════════════╣');
+      console.log(`  ║  🚀 Server   →  http://localhost:${PORT}         ║`);
+      console.log(`  ║  🌍 Env      →  ${NODE_ENV.padEnd(32)} ║`);
+      console.log('  ║  📡 WebSocket  → enabled                       ║');
+      console.log('  ║  🍃 MongoDB    → connected                     ║');
+      console.log('  ║  ⚡ Redis      → connected                     ║');
+      console.log('  ╚════════════════════════════════════════════════╝');
+      console.log('');
+    });
+  } catch (err) {
+    console.error('[Bootstrap] Fatal error:', err);
+    process.exit(1);
   }
-});
+}
 
-io.on('connection', (socket) => {
-  const userId = socket.userId;
-  console.log(`🔌 WebSocket connected: user ${userId}`);
-
-  // Join user-specific room for targeted events
-  socket.join(`user:${userId}`);
-
-  // Client can subscribe to specific platforms
-  socket.on('subscribe:platform', (platformId) => {
-    socket.join(`platform:${platformId}:${userId}`);
-  });
-
-  socket.on('unsubscribe:platform', (platformId) => {
-    socket.leave(`platform:${platformId}:${userId}`);
-  });
-
-  socket.on('disconnect', (reason) => {
-    console.log(`🔌 WebSocket disconnected: user ${userId} (${reason})`);
-  });
-});
-
-// ─────────────────────────────────────────────────────────────────────────────
-// START SERVER
-// ─────────────────────────────────────────────────────────────────────────────
-
-const PORT = process.env.PORT || 5000;
-
-const start = async () => {
-  console.log('');
-  console.log('╔═══════════════════════════════════════════╗');
-  console.log('║   🍒  The All-in-One App · Backend        ║');
-  console.log('║   Cherry Computer Ltd.                    ║');
-  console.log('║   Dr. Ahmad Mateen Ishanzai               ║');
-  console.log('╚═══════════════════════════════════════════╝');
-  console.log('');
-
-  await connectMongoDB();
-  connectRedis();
-
-  server.listen(PORT, () => {
-    console.log(`✅ Server running on port ${PORT}`);
-    console.log(`   Environment: ${process.env.NODE_ENV || 'development'}`);
-    console.log(`   Health check: http://localhost:${PORT}/health`);
-    console.log(`   API root: http://localhost:${PORT}/api`);
-    console.log('');
-  });
-};
-
-start().catch(err => {
-  console.error('💥 Failed to start server:', err);
-  process.exit(1);
-});
+bootstrap();
 
 module.exports = { app, server, io };

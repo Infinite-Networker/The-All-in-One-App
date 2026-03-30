@@ -1,6 +1,11 @@
 <div align="center">
 
-# 📱 The All-in-One App ✨
+<!-- App Logo -->
+<img src="assets/images/logo.png" alt="The All-in-One App Logo" width="320"/>
+
+<br/>
+
+# The All-in-One App
 
 ### *One Tap. Every Platform. Zero Friction.*
 
@@ -12,6 +17,10 @@
 [![MongoDB](https://img.shields.io/badge/MongoDB-7.0-47A248?style=for-the-badge&logo=mongodb&logoColor=white)](https://mongodb.com/)
 [![OAuth 2.0](https://img.shields.io/badge/OAuth-2.0-FF6600?style=for-the-badge&logo=oauth&logoColor=white)](https://oauth.net/2/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
+
+<br/>
+
+> **This repository was created by [Cherry Computer Ltd.](https://github.com/Infinite-Networker)**
 
 <br/>
 

@@ -1,0 +1,114 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 400" width="1200" height="400">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#0A0A0F"/>
+      <stop offset="100%" stop-color="#12121A"/>
+    </linearGradient>
+    <linearGradient id="cherryGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%"   stop-color="#DC143C"/>
+      <stop offset="100%" stop-color="#FF4D6D"/>
+    </linearGradient>
+    <linearGradient id="igGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#405DE6"/>
+      <stop offset="50%"  stop-color="#833AB4"/>
+      <stop offset="100%" stop-color="#FD1D1D"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+    <filter id="softglow">
+      <feGaussianBlur stdDeviation="12" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="400" fill="url(#bgGrad)" rx="20"/>
+
+  <!-- Subtle grid pattern -->
+  <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
+    <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#1E1E2A" stroke-width="0.5"/>
+  </pattern>
+  <rect width="1200" height="400" fill="url(#grid)" rx="20" opacity="0.6"/>
+
+  <!-- Glow orb left -->
+  <circle cx="200" cy="200" r="200" fill="rgba(220,20,60,0.06)" filter="url(#softglow)"/>
+  <!-- Glow orb right -->
+  <circle cx="1000" cy="200" r="180" fill="rgba(29,161,242,0.04)" filter="url(#softglow)"/>
+
+  <!-- LEFT SIDE: Logo + Title -->
+
+  <!-- App icon card -->
+  <rect x="80" y="130" width="100" height="100" rx="24" fill="#FFFFFF"/>
+
+  <!-- Heart icon -->
+  <path d="M104 161 C104 156 107.5 152 112 152 C114.5 152 116.2 153.5 117 155.2 C117.8 153.5 119.5 152 122 152 C126.5 152 130 156 130 161 C130 169 117 177 117 177 C117 177 104 169 104 161Z" fill="#0A0A0F"/>
+  <!-- Chat bubble -->
+  <rect x="132" y="151" width="22" height="15" rx="4" fill="#0A0A0F"/>
+  <polygon points="134,166 134,171 139,166" fill="#0A0A0F"/>
+  <!-- Person -->
+  <circle cx="152" cy="185" r="7" fill="#0A0A0F"/>
+  <path d="M138 207 C138 198 166 198 166 207" fill="#0A0A0F"/>
+
+  <!-- Title text -->
+  <text x="210" y="168" font-family="'SF Pro Display', 'Helvetica Neue', Arial, sans-serif" font-weight="900" font-size="42" fill="#FFFFFF" letter-spacing="-1">The All-in-One App</text>
+  <text x="212" y="210" font-family="'SF Pro Display', 'Helvetica Neue', Arial, sans-serif" font-weight="400" font-size="20" fill="#A0A0B8">One Tap. Every Platform. Zero Friction.</text>
+
+  <!-- Cherry Computer Ltd. badge -->
+  <rect x="212" y="228" width="220" height="32" rx="16" fill="rgba(220,20,60,0.15)" stroke="rgba(220,20,60,0.3)" stroke-width="1"/>
+  <circle cx="230" cy="244" r="5" fill="#DC143C"/>
+  <text x="242" y="249" font-family="Arial, sans-serif" font-weight="700" font-size="13" fill="#FF4D6D">Cherry Computer Ltd.</text>
+
+  <!-- RIGHT SIDE: Platform icons grid -->
+  <g transform="translate(780, 80)">
+    <!-- Platform cards -->
+    <!-- Instagram -->
+    <rect x="0"   y="0"   width="80" height="80" rx="18" fill="rgba(225,48,108,0.12)" stroke="rgba(225,48,108,0.25)" stroke-width="1"/>
+    <text x="28" y="50" font-size="32">📸</text>
+    <text x="14" y="72" font-family="Arial" font-size="10" fill="#E1306C" font-weight="700">Instagram</text>
+
+    <!-- X/Twitter -->
+    <rect x="100" y="0"   width="80" height="80" rx="18" fill="rgba(29,161,242,0.12)" stroke="rgba(29,161,242,0.25)" stroke-width="1"/>
+    <text x="128" y="50" font-size="32">🐦</text>
+    <text x="114" y="72" font-family="Arial" font-size="10" fill="#1DA1F2" font-weight="700">X (Twitter)</text>
+
+    <!-- Facebook -->
+    <rect x="200" y="0"   width="80" height="80" rx="18" fill="rgba(24,119,242,0.12)" stroke="rgba(24,119,242,0.25)" stroke-width="1"/>
+    <text x="228" y="50" font-size="32">👥</text>
+    <text x="218" y="72" font-family="Arial" font-size="10" fill="#1877F2" font-weight="700">Facebook</text>
+
+    <!-- TikTok -->
+    <rect x="0"   y="110" width="80" height="80" rx="18" fill="rgba(255,0,80,0.12)" stroke="rgba(255,0,80,0.25)" stroke-width="1"/>
+    <text x="28" y="160" font-size="32">🎵</text>
+    <text x="24" y="182" font-family="Arial" font-size="10" fill="#FF0050" font-weight="700">TikTok</text>
+
+    <!-- LinkedIn -->
+    <rect x="100" y="110" width="80" height="80" rx="18" fill="rgba(10,102,194,0.12)" stroke="rgba(10,102,194,0.25)" stroke-width="1"/>
+    <text x="128" y="160" font-size="32">💼</text>
+    <text x="116" y="182" font-family="Arial" font-size="10" fill="#0A66C2" font-weight="700">LinkedIn</text>
+
+    <!-- YouTube -->
+    <rect x="200" y="110" width="80" height="80" rx="18" fill="rgba(255,0,0,0.12)" stroke="rgba(255,0,0,0.25)" stroke-width="1"/>
+    <text x="228" y="160" font-size="32">🎬</text>
+    <text x="217" y="182" font-family="Arial" font-size="10" fill="#FF0000" font-weight="700">YouTube</text>
+  </g>
+
+  <!-- CENTER: One-tap button illustration -->
+  <rect x="535" y="155" width="180" height="56" rx="28"
+        fill="url(#cherryGrad)"
+        filter="url(#glow)"
+        opacity="0.95"/>
+  <text x="573" y="190" font-family="Arial, sans-serif" font-weight="800" font-size="16" fill="#FFFFFF">⚡ One Tap Engage</text>
+
+  <!-- Connection lines from button to platforms (subtle) -->
+  <line x1="535" y1="183" x2="460" y2="183" stroke="rgba(220,20,60,0.2)" stroke-width="1" stroke-dasharray="4,4"/>
+  <line x1="715" y1="183" x2="800" y2="120" stroke="rgba(220,20,60,0.2)" stroke-width="1" stroke-dasharray="4,4"/>
+  <line x1="715" y1="183" x2="800" y2="183" stroke="rgba(220,20,60,0.2)" stroke-width="1" stroke-dasharray="4,4"/>
+  <line x1="715" y1="183" x2="800" y2="290" stroke="rgba(220,20,60,0.2)" stroke-width="1" stroke-dasharray="4,4"/>
+
+  <!-- Bottom: copyright -->
+  <text x="600" y="375" font-family="Arial, sans-serif" font-size="12" fill="#3A3A50" text-anchor="middle">
+    The All-in-One App — © 2026 Cherry Computer Ltd. — MIT License
+  </text>
+</svg>

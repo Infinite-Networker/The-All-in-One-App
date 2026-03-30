@@ -2,104 +2,102 @@
  * The All-in-One App — Engagement Log Model
  * Cherry Computer Ltd.
  *
- * Every engagement action is logged here for analytics,
- * rate limiting, and audit purposes.
+ * Records every engagement action for analytics and audit purposes.
+ * Each document represents one platform-level action (like, comment, follow)
+ * that was triggered by the one-tap engine.
  */
 
 const mongoose = require('mongoose');
 
-const EngagementLogSchema = new mongoose.Schema({
-  userId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true,
-    index: true,
-  },
-
-  // What platform and action
-  platform: {
-    type: String,
-    required: true,
-    enum: ['instagram', 'twitter', 'facebook', 'tiktok', 'linkedin', 'youtube'],
-    index: true,
-  },
-  action: {
-    type: String,
-    required: true,
-    enum: ['like', 'comment', 'follow', 'unfollow', 'unlike'],
-  },
-
-  // Target content
-  contentId: { type: String, required: true },
-  contentType: {
-    type: String,
-    enum: ['post', 'video', 'tweet', 'reel', 'story', 'article'],
-    default: 'post',
-  },
-  targetUserId: { type: String },
-
-  // Result
-  status: {
-    type: String,
-    enum: ['success', 'failed', 'rate_limited', 'skipped'],
-    required: true,
-    index: true,
-  },
-  errorMessage: { type: String },
-
-  // Batch engagement tracking
-  batchId: { type: String, index: true }, // Groups all platforms from one One-Tap action
-
-  // Timing
-  executedAt: { type: Date, default: Date.now, index: true },
-  responseTimeMs: { type: Number },
-
-}, {
-  timestamps: false,
-  // TTL: auto-delete logs older than 90 days
-  expireAfterSeconds: 90 * 24 * 60 * 60,
-});
-
-// Compound indexes for analytics queries
-EngagementLogSchema.index({ userId: 1, executedAt: -1 });
-EngagementLogSchema.index({ userId: 1, platform: 1, action: 1, executedAt: -1 });
-EngagementLogSchema.index({ userId: 1, status: 1, executedAt: -1 });
-EngagementLogSchema.index({ batchId: 1 });
-
-// Static method for analytics aggregation
-EngagementLogSchema.statics.getAnalyticsSummary = function (userId, startDate, endDate) {
-  return this.aggregate([
-    {
-      $match: {
-        userId: new mongoose.Types.ObjectId(userId),
-        executedAt: { $gte: startDate, $lte: endDate },
-        status: 'success',
-      },
+const engagementLogSchema = new mongoose.Schema(
+  {
+    userId: {
+      type:     mongoose.Schema.Types.ObjectId,
+      ref:      'User',
+      required: true,
+      index:    true,
     },
-    {
-      $group: {
-        _id: {
-          platform: '$platform',
-          action: '$action',
-          day: { $dateToString: { format: '%Y-%m-%d', date: '$executedAt' } },
-        },
-        count: { $sum: 1 },
-        avgResponseTime: { $avg: '$responseTimeMs' },
-      },
+
+    // Which platform this engagement fired on
+    platform: {
+      type:     String,
+      required: true,
+      enum:     ['instagram', 'twitter', 'facebook', 'tiktok', 'linkedin', 'youtube'],
+      index:    true,
     },
-    {
-      $group: {
-        _id: { platform: '$_id.platform', action: '$_id.action' },
-        dailyData: { $push: { day: '$_id.day', count: '$count' } },
-        total: { $sum: '$count' },
-        avgResponseTime: { $avg: '$avgResponseTime' },
-      },
+
+    // What action was taken
+    action: {
+      type:     String,
+      required: true,
+      enum:     ['like', 'comment', 'follow', 'all'],
     },
-    {
-      $sort: { '_id.platform': 1, '_id.action': 1 },
+
+    // The content that was engaged with
+    contentId:   { type: String },
+    contentType: {
+      type: String,
+      enum: ['post', 'tweet', 'video', 'reel', 'short', 'article', 'story'],
     },
-  ]);
+    contentUrl: { type: String },
+
+    // The comment text if applicable
+    commentText: { type: String, maxlength: 280 },
+
+    // Result
+    status: {
+      type:    String,
+      enum:    ['success', 'failed', 'pending'],
+      default: 'pending',
+      index:   true,
+    },
+    errorMessage: { type: String },
+
+    // Platform response data (e.g., new like count, comment ID)
+    responseData: { type: mongoose.Schema.Types.Mixed },
+
+    // Timing
+    firedAt:     { type: Date, default: Date.now },
+    completedAt: { type: Date },
+    durationMs:  { type: Number },
+  },
+  {
+    timestamps: { createdAt: 'createdAt', updatedAt: false },
+  }
+);
+
+// ─── Indexes ──────────────────────────────────────────────────────────────
+
+engagementLogSchema.index({ userId: 1, createdAt: -1 });
+engagementLogSchema.index({ userId: 1, platform: 1, createdAt: -1 });
+engagementLogSchema.index({ userId: 1, status: 1 });
+
+// TTL index — auto-delete logs older than 1 year
+engagementLogSchema.index({ createdAt: 1 }, { expireAfterSeconds: 365 * 24 * 3600 });
+
+// ─── Statics ──────────────────────────────────────────────────────────────
+
+/**
+ * Log a batch of engagement results (one per platform in a multi-platform fire).
+ */
+engagementLogSchema.statics.logBatch = async function (userId, action, results) {
+  const docs = results.map((result) => ({
+    userId,
+    platform:    result.platform,
+    action,
+    contentId:   result.contentId,
+    contentType: result.contentType,
+    commentText: result.commentText,
+    status:      result.status,
+    errorMessage: result.error,
+    responseData: result.data,
+    firedAt:     result.firedAt,
+    completedAt: result.completedAt,
+    durationMs:  result.durationMs,
+  }));
+
+  return this.insertMany(docs, { ordered: false });
 };
 
-const EngagementLog = mongoose.model('EngagementLog', EngagementLogSchema);
+const EngagementLog = mongoose.model('EngagementLog', engagementLogSchema);
 module.exports = EngagementLog;

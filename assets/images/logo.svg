@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 120" width="400" height="120">
+  <!-- Background -->
+  <rect width="400" height="120" fill="#13161F" rx="12"/>
+
+  <!-- Icon Card (white rounded rectangle) -->
+  <rect x="20" y="16" width="88" height="88" rx="18" fill="#FFFFFF"/>
+
+  <!-- Heart icon (top-left inside card) -->
+  <path d="M46 40 C46 37.5 48 35 51 35 C53 35 54.5 36.5 55 38 C55.5 36.5 57 35 59 35 C62 35 64 37.5 64 40 C64 46 55 52 55 52 C55 52 46 46 46 40Z" fill="#13161F"/>
+
+  <!-- Chat bubble (top-right inside card) -->
+  <rect x="67" y="34" width="22" height="15" rx="4" fill="#13161F"/>
+  <polygon points="70,49 70,53 75,49" fill="#13161F"/>
+
+  <!-- Person icon (bottom center inside card) -->
+  <circle cx="64" cy="67" r="7" fill="#13161F"/>
+  <path d="M52 88 C52 79 76 79 76 88" fill="#13161F"/>
+
+  <!-- Text: The -->
+  <text x="128" y="42" font-family="'SF Pro Display', 'Helvetica Neue', Arial, sans-serif" font-weight="700" font-size="26" fill="#FFFFFF">The</text>
+  <!-- Text: All-in-One -->
+  <text x="128" y="74" font-family="'SF Pro Display', 'Helvetica Neue', Arial, sans-serif" font-weight="700" font-size="26" fill="#FFFFFF">All-in-One</text>
+  <!-- Text: App -->
+  <text x="128" y="104" font-family="'SF Pro Display', 'Helvetica Neue', Arial, sans-serif" font-weight="700" font-size="26" fill="#FFFFFF">App</text>
+</svg>
