@@ -1,0 +1,1455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The All-in-One App — Cherry Computer Ltd.</title>
+  <meta name="description" content="One Tap. Every Platform. Zero Friction. The ultimate social media engagement app by Cherry Computer Ltd." />
+  <meta name="author" content="Cherry Computer Ltd." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <style>
+    /* ─── CSS RESET & ROOT VARIABLES ─────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cherry:       #DC143C;
+      --cherry-deep:  #A50E2D;
+      --cherry-light: #FF4D6D;
+      --cherry-glow:  rgba(220, 20, 60, 0.18);
+
+      --bg:           #0A0A0F;
+      --surface:      #12121A;
+      --card:         #1A1A26;
+      --card-hover:   #1E1E2E;
+      --border:       #2A2A3A;
+      --muted:        #3A3A50;
+
+      --text-primary:   #FFFFFF;
+      --text-secondary: #A0A0B8;
+      --text-tertiary:  #606080;
+
+      --instagram: #E1306C;
+      --twitter:   #1DA1F2;
+      --facebook:  #1877F2;
+      --tiktok:    #FF0050;
+      --linkedin:  #0A66C2;
+      --youtube:   #FF0000;
+
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 24px;
+      --radius-full: 9999px;
+
+      --shadow-cherry: 0 8px 32px rgba(220, 20, 60, 0.35);
+      --shadow-card:   0 4px 24px rgba(0,0,0,0.5);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text-primary);
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    ::selection { background: var(--cherry-glow); color: var(--cherry-light); }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--surface); }
+    ::-webkit-scrollbar-thumb { background: var(--muted); border-radius: 3px; }
+
+    /* ─── NOISE OVERLAY ───────────────────────────────────────────────── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 0; opacity: 0.4;
+    }
+
+    /* ─── NAVIGATION ──────────────────────────────────────────────────── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+      backdrop-filter: blur(20px) saturate(1.8);
+      -webkit-backdrop-filter: blur(20px) saturate(1.8);
+      background: rgba(10,10,15,0.85);
+      border-bottom: 1px solid var(--border);
+      padding: 0 2rem;
+      height: 68px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+
+    .nav-logo {
+      display: flex; align-items: center; gap: 12px; text-decoration: none;
+    }
+
+    .nav-logo-icon {
+      width: 40px; height: 40px;
+      background: var(--text-primary);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .nav-logo-icon svg { width: 24px; height: 24px; }
+
+    .nav-logo-text {
+      font-size: 1.05rem; font-weight: 700;
+      color: var(--text-primary); line-height: 1.2;
+    }
+
+    .nav-logo-text span { color: var(--cherry); }
+
+    .nav-links {
+      display: flex; align-items: center; gap: 2rem;
+      list-style: none;
+    }
+
+    .nav-links a {
+      color: var(--text-secondary); text-decoration: none;
+      font-size: 0.9rem; font-weight: 500;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--text-primary); }
+
+    .nav-cta {
+      background: var(--cherry);
+      color: #fff !important;
+      padding: 8px 20px;
+      border-radius: var(--radius-full);
+      font-weight: 600 !important;
+      transition: background 0.2s, box-shadow 0.2s !important;
+      box-shadow: var(--shadow-cherry);
+    }
+    .nav-cta:hover { background: var(--cherry-light) !important; }
+
+    /* ─── HERO ────────────────────────────────────────────────────────── */
+    .hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center;
+      padding: 120px 2rem 80px;
+      position: relative; overflow: hidden;
+    }
+
+    /* Animated gradient orbs */
+    .orb {
+      position: absolute; border-radius: 50%;
+      filter: blur(80px); pointer-events: none;
+      animation: float 8s ease-in-out infinite;
+    }
+    .orb-1 {
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(220,20,60,0.15) 0%, transparent 70%);
+      top: -200px; left: -200px;
+      animation-delay: 0s;
+    }
+    .orb-2 {
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(29,161,242,0.1) 0%, transparent 70%);
+      bottom: -150px; right: -150px;
+      animation-delay: -4s;
+    }
+    .orb-3 {
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(255,0,80,0.08) 0%, transparent 70%);
+      top: 40%; left: 50%; transform: translateX(-50%);
+      animation-delay: -2s;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0) scale(1); }
+      50%       { transform: translateY(-30px) scale(1.05); }
+    }
+
+    /* Logo in hero */
+    .hero-logo {
+      display: flex; align-items: center; justify-content: center;
+      gap: 20px; margin-bottom: 3rem;
+      animation: fadeInDown 0.8s ease both;
+    }
+
+    .hero-logo-card {
+      width: 80px; height: 80px;
+      background: var(--text-primary);
+      border-radius: 20px;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 20px 60px rgba(255,255,255,0.15), 0 0 0 1px rgba(255,255,255,0.1);
+      position: relative;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .hero-logo-card:hover {
+      transform: translateY(-4px) rotate(2deg);
+      box-shadow: 0 28px 70px rgba(255,255,255,0.2);
+    }
+
+    .hero-logo-card svg { width: 48px; height: 48px; }
+
+    .hero-logo-text {
+      text-align: left;
+      line-height: 1.1;
+    }
+    .hero-logo-text h2 {
+      font-size: 2.2rem; font-weight: 800;
+      color: var(--text-primary);
+    }
+
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--cherry-light);
+      padding: 6px 16px;
+      border-radius: var(--radius-full);
+      font-size: 0.8rem; font-weight: 600;
+      letter-spacing: 0.05em; text-transform: uppercase;
+      margin-bottom: 1.5rem;
+      animation: fadeInDown 0.8s ease 0.1s both;
+    }
+
+    .badge-dot {
+      width: 7px; height: 7px;
+      background: var(--cherry);
+      border-radius: 50%;
+      animation: pulse-dot 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.6; transform: scale(0.8); }
+    }
+
+    h1 {
+      font-size: clamp(2.8rem, 6vw, 5.5rem);
+      font-weight: 900; line-height: 1.05;
+      letter-spacing: -0.03em;
+      margin-bottom: 1.5rem;
+      animation: fadeInDown 0.8s ease 0.2s both;
+    }
+
+    h1 .gradient-text {
+      background: linear-gradient(135deg, var(--cherry) 0%, var(--cherry-light) 50%, #FF8FA0 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-subtitle {
+      font-size: clamp(1.1rem, 2vw, 1.4rem);
+      color: var(--text-secondary);
+      max-width: 640px; margin: 0 auto 2.5rem;
+      line-height: 1.7;
+      animation: fadeInDown 0.8s ease 0.3s both;
+    }
+
+    .hero-actions {
+      display: flex; gap: 1rem; flex-wrap: wrap;
+      justify-content: center;
+      animation: fadeInDown 0.8s ease 0.4s both;
+    }
+
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: linear-gradient(135deg, var(--cherry), var(--cherry-light));
+      color: #fff; text-decoration: none;
+      padding: 14px 32px;
+      border-radius: var(--radius-full);
+      font-weight: 700; font-size: 1rem;
+      box-shadow: var(--shadow-cherry);
+      transition: transform 0.2s, box-shadow 0.2s;
+      border: none; cursor: pointer;
+    }
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 40px rgba(220,20,60,0.5);
+    }
+
+    .btn-secondary {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: var(--card);
+      color: var(--text-primary); text-decoration: none;
+      padding: 14px 32px;
+      border-radius: var(--radius-full);
+      font-weight: 600; font-size: 1rem;
+      border: 1px solid var(--border);
+      transition: border-color 0.2s, background 0.2s, transform 0.2s;
+      cursor: pointer;
+    }
+    .btn-secondary:hover {
+      border-color: var(--cherry);
+      background: var(--cherry-glow);
+      transform: translateY(-2px);
+    }
+
+    /* Platform Pills */
+    .platform-pills {
+      display: flex; flex-wrap: wrap; gap: 10px;
+      justify-content: center; margin-top: 3.5rem;
+      animation: fadeInDown 0.8s ease 0.5s both;
+    }
+
+    .platform-pill {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 8px 16px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-full);
+      font-size: 0.85rem; font-weight: 500;
+      color: var(--text-secondary);
+      transition: border-color 0.2s, color 0.2s, transform 0.2s;
+    }
+    .platform-pill:hover {
+      border-color: var(--platform-color);
+      color: var(--platform-color);
+      transform: translateY(-2px);
+    }
+    .platform-pill .dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--platform-color);
+    }
+
+    /* ─── STATS BAR ───────────────────────────────────────────────────── */
+    .stats-bar {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      gap: 2px;
+      margin: 0 2rem;
+      background: var(--border);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .stat-item {
+      background: var(--card);
+      padding: 2rem;
+      text-align: center;
+      transition: background 0.2s;
+    }
+    .stat-item:hover { background: var(--card-hover); }
+
+    .stat-number {
+      font-size: 2.5rem; font-weight: 900;
+      background: linear-gradient(135deg, var(--cherry), var(--cherry-light));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+      display: block; line-height: 1.2;
+    }
+
+    .stat-label {
+      font-size: 0.85rem; color: var(--text-secondary);
+      font-weight: 500; margin-top: 4px;
+    }
+
+    /* ─── SECTIONS ────────────────────────────────────────────────────── */
+    section {
+      padding: 100px 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+      position: relative; z-index: 1;
+    }
+
+    .section-badge {
+      display: inline-block;
+      background: var(--cherry-glow);
+      color: var(--cherry-light);
+      border: 1px solid rgba(220,20,60,0.3);
+      padding: 5px 14px;
+      border-radius: var(--radius-full);
+      font-size: 0.75rem; font-weight: 700;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+
+    .section-title {
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 800; line-height: 1.15;
+      letter-spacing: -0.02em; margin-bottom: 1rem;
+    }
+
+    .section-sub {
+      font-size: 1.1rem; color: var(--text-secondary);
+      max-width: 560px; line-height: 1.7;
+    }
+
+    /* ─── FEATURES GRID ───────────────────────────────────────────────── */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 1.5rem; margin-top: 4rem;
+    }
+
+    .feature-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 2rem;
+      transition: border-color 0.3s, background 0.3s, transform 0.3s, box-shadow 0.3s;
+      position: relative; overflow: hidden;
+    }
+
+    .feature-card::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(circle at 0% 0%, var(--cherry-glow) 0%, transparent 60%);
+      opacity: 0; transition: opacity 0.3s;
+    }
+
+    .feature-card:hover {
+      border-color: rgba(220, 20, 60, 0.4);
+      background: var(--card-hover);
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-card);
+    }
+    .feature-card:hover::before { opacity: 1; }
+
+    .feature-icon {
+      width: 52px; height: 52px;
+      background: var(--cherry-glow);
+      border: 1px solid rgba(220,20,60,0.25);
+      border-radius: var(--radius-md);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.5rem; margin-bottom: 1.25rem;
+    }
+
+    .feature-title {
+      font-size: 1.1rem; font-weight: 700;
+      margin-bottom: 0.5rem; color: var(--text-primary);
+    }
+
+    .feature-desc {
+      font-size: 0.9rem; color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    /* ─── PLATFORM SECTION ────────────────────────────────────────────── */
+    .platforms-section {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .platforms-wrapper {
+      max-width: 1200px; margin: 0 auto;
+      padding: 100px 2rem;
+    }
+
+    .platforms-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      margin-top: 3.5rem;
+      background: var(--border);
+      border-radius: var(--radius-xl);
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .platform-item {
+      background: var(--card);
+      padding: 2.5rem 2rem;
+      display: flex; flex-direction: column;
+      align-items: center; text-align: center;
+      gap: 1rem;
+      transition: background 0.2s, transform 0.2s;
+      position: relative; overflow: hidden;
+    }
+
+    .platform-item::after {
+      content: '✅ Integrated';
+      position: absolute; top: 14px; right: 14px;
+      background: rgba(34, 197, 94, 0.15);
+      border: 1px solid rgba(34,197,94,0.3);
+      color: #22C55E;
+      padding: 3px 10px;
+      border-radius: var(--radius-full);
+      font-size: 0.7rem; font-weight: 600;
+    }
+
+    .platform-item:hover { background: var(--card-hover); }
+
+    .platform-item-icon {
+      width: 64px; height: 64px;
+      border-radius: 18px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.8rem;
+      transition: transform 0.3s;
+    }
+    .platform-item:hover .platform-item-icon {
+      transform: scale(1.1) rotate(-3deg);
+    }
+
+    .platform-item-name {
+      font-size: 1.05rem; font-weight: 700;
+    }
+
+    .platform-item-desc {
+      font-size: 0.82rem; color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    /* ─── TECH STACK ──────────────────────────────────────────────────── */
+    .tech-stack {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1.5rem; margin-top: 3.5rem;
+    }
+
+    .tech-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 1.75rem;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .tech-card:hover {
+      border-color: rgba(220,20,60,0.4);
+      transform: translateY(-3px);
+    }
+
+    .tech-card-header {
+      display: flex; align-items: center; gap: 12px;
+      margin-bottom: 1rem;
+    }
+
+    .tech-card-icon {
+      width: 42px; height: 42px;
+      border-radius: var(--radius-sm);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem;
+    }
+
+    .tech-card-title {
+      font-size: 1rem; font-weight: 700;
+    }
+
+    .tech-tags {
+      display: flex; flex-wrap: wrap; gap: 6px;
+    }
+
+    .tech-tag {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      padding: 4px 10px;
+      border-radius: var(--radius-full);
+      font-size: 0.75rem; font-weight: 500;
+    }
+
+    /* ─── MOCKUP SECTION ──────────────────────────────────────────────── */
+    .mockup-section {
+      text-align: center;
+    }
+
+    .phone-mockup {
+      position: relative; display: inline-block;
+      margin-top: 4rem;
+    }
+
+    .phone-frame {
+      width: 280px; height: 560px;
+      background: var(--card);
+      border-radius: 44px;
+      border: 2px solid var(--border);
+      overflow: hidden;
+      box-shadow: 0 40px 120px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,255,0.05);
+      position: relative;
+    }
+
+    .phone-notch {
+      width: 100px; height: 28px;
+      background: var(--bg);
+      border-radius: 0 0 20px 20px;
+      margin: 0 auto;
+      position: relative; z-index: 10;
+    }
+
+    .phone-screen {
+      padding: 0 12px;
+      height: calc(100% - 28px);
+      overflow: hidden;
+    }
+
+    /* Screen content */
+    .phone-header {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 10px 0;
+    }
+
+    .phone-header-title {
+      font-size: 0.75rem; font-weight: 800; color: var(--text-primary);
+    }
+
+    .phone-avatar {
+      width: 28px; height: 28px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--cherry), var(--cherry-light));
+    }
+
+    .feed-post {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+      padding: 10px;
+      margin-bottom: 8px;
+    }
+
+    .feed-post-header {
+      display: flex; align-items: center; gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .feed-post-avatar {
+      width: 24px; height: 24px; border-radius: 50%;
+    }
+
+    .feed-post-meta { flex: 1; }
+
+    .feed-post-name {
+      font-size: 0.6rem; font-weight: 700; color: var(--text-primary);
+    }
+
+    .feed-post-platform {
+      font-size: 0.55rem; color: var(--text-tertiary);
+    }
+
+    .feed-post-img {
+      width: 100%; height: 80px;
+      border-radius: 6px;
+      margin-bottom: 8px;
+      object-fit: cover;
+    }
+
+    .feed-post-actions {
+      display: flex; gap: 8px;
+    }
+
+    .feed-action-btn {
+      flex: 1; padding: 4px 0;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-full);
+      font-size: 0.55rem; font-weight: 600;
+      color: var(--text-secondary);
+      text-align: center;
+      cursor: pointer;
+    }
+
+    .one-tap-btn {
+      position: absolute;
+      bottom: 60px; left: 50%; transform: translateX(-50%);
+      background: linear-gradient(135deg, var(--cherry), var(--cherry-light));
+      color: #fff;
+      padding: 8px 20px;
+      border-radius: var(--radius-full);
+      font-size: 0.65rem; font-weight: 800;
+      box-shadow: 0 4px 20px rgba(220,20,60,0.5);
+      white-space: nowrap;
+      animation: pulse-btn 2.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse-btn {
+      0%, 100% { box-shadow: 0 4px 20px rgba(220,20,60,0.5); }
+      50%       { box-shadow: 0 4px 32px rgba(220,20,60,0.8); }
+    }
+
+    /* Side mockups */
+    .phone-mockup-group {
+      display: flex; gap: 2rem;
+      align-items: center; justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .phone-secondary {
+      opacity: 0.5; transform: scale(0.85);
+      transition: opacity 0.3s, transform 0.3s;
+    }
+    .phone-secondary:hover { opacity: 0.8; transform: scale(0.9); }
+
+    /* ─── ARCHITECTURE DIAGRAM ────────────────────────────────────────── */
+    .arch-diagram {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-xl);
+      padding: 2.5rem;
+      margin-top: 3.5rem;
+      font-family: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+      font-size: 0.82rem;
+      overflow-x: auto;
+    }
+
+    .arch-diagram pre {
+      color: var(--text-secondary);
+      line-height: 1.8;
+    }
+
+    .arch-diagram pre .highlight {
+      color: var(--cherry-light);
+      font-weight: 700;
+    }
+
+    .arch-diagram pre .dim { color: var(--text-tertiary); }
+
+    /* ─── ROADMAP ─────────────────────────────────────────────────────── */
+    .roadmap-list {
+      list-style: none; margin-top: 3rem;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1rem;
+    }
+
+    .roadmap-item {
+      display: flex; align-items: flex-start; gap: 14px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.25rem;
+      transition: border-color 0.2s, transform 0.2s;
+    }
+    .roadmap-item:hover {
+      border-color: rgba(220,20,60,0.3);
+      transform: translateX(4px);
+    }
+
+    .roadmap-check {
+      width: 22px; height: 22px; flex-shrink: 0;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.7rem; font-weight: 700;
+      margin-top: 1px;
+    }
+
+    .roadmap-check.done {
+      background: rgba(34,197,94,0.15);
+      border: 1px solid rgba(34,197,94,0.4);
+      color: #22C55E;
+    }
+
+    .roadmap-check.pending {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text-tertiary);
+    }
+
+    .roadmap-text {
+      font-size: 0.9rem; color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    /* ─── FOOTER ──────────────────────────────────────────────────────── */
+    footer {
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      padding: 5rem 2rem 3rem;
+      text-align: center;
+      position: relative; z-index: 1;
+    }
+
+    .footer-logo {
+      display: flex; align-items: center; justify-content: center;
+      gap: 16px; margin-bottom: 1.5rem;
+    }
+
+    .footer-logo-card {
+      width: 56px; height: 56px;
+      background: var(--text-primary);
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .footer-logo-card svg { width: 34px; height: 34px; }
+
+    .footer-logo-text h3 {
+      font-size: 1.4rem; font-weight: 800;
+      text-align: left;
+    }
+
+    .footer-logo-text p {
+      font-size: 0.8rem; color: var(--text-secondary);
+      text-align: left;
+    }
+
+    .footer-tagline {
+      font-size: 1.05rem; color: var(--text-secondary);
+      margin-bottom: 2.5rem;
+    }
+
+    .footer-divider {
+      width: 80px; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--cherry), transparent);
+      margin: 2rem auto;
+    }
+
+    .footer-meta {
+      font-size: 0.82rem; color: var(--text-tertiary);
+      line-height: 1.8;
+    }
+
+    .footer-meta a {
+      color: var(--cherry-light); text-decoration: none;
+    }
+    .footer-meta a:hover { text-decoration: underline; }
+
+    .footer-badges {
+      display: flex; flex-wrap: wrap; gap: 8px;
+      justify-content: center; margin: 1.5rem 0;
+    }
+
+    .footer-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      padding: 5px 14px;
+      border-radius: var(--radius-full);
+      font-size: 0.75rem; font-weight: 500;
+    }
+
+    /* ─── DIVIDER ─────────────────────────────────────────────────────── */
+    .full-divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      max-width: 100%;
+    }
+
+    /* ─── ANIMATIONS ON SCROLL ────────────────────────────────────────── */
+    .reveal {
+      opacity: 0; transform: translateY(30px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.visible {
+      opacity: 1; transform: translateY(0);
+    }
+
+    /* ─── RESPONSIVE ──────────────────────────────────────────────────── */
+    @media (max-width: 900px) {
+      .stats-bar { grid-template-columns: repeat(2, 1fr); }
+      .platforms-grid { grid-template-columns: repeat(2, 1fr); }
+      .nav-links { display: none; }
+    }
+
+    @media (max-width: 600px) {
+      .stats-bar { grid-template-columns: 1fr 1fr; }
+      .platforms-grid { grid-template-columns: 1fr 1fr; }
+      h1 { font-size: 2.4rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ─── NAVIGATION ─────────────────────────────────────────────────── -->
+  <nav>
+    <a href="#" class="nav-logo">
+      <div class="nav-logo-icon">
+        <!-- Logo Icon SVG -->
+        <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M10 20 C10 17 12.5 14.5 16 14.5 C18.2 14.5 19.8 15.7 20.5 17.3 C21.2 15.7 22.8 14.5 25 14.5 C28.5 14.5 31 17 31 20 C31 26 20.5 32 20.5 32 C20.5 32 10 26 10 20Z" fill="#13161F"/>
+          <rect x="32" y="13" width="14" height="10" rx="3" fill="#13161F"/>
+          <polygon points="34,23 34,27 38,23" fill="#13161F"/>
+          <circle cx="37" cy="34" r="5" fill="#13161F"/>
+          <path d="M28 44 C28 38 46 38 46 44" fill="#13161F"/>
+        </svg>
+      </div>
+      <div class="nav-logo-text">
+        The All-in-One App<br/>
+        <small style="font-size:0.65rem;font-weight:400;color:var(--text-secondary);">by Cherry Computer Ltd.</small>
+      </div>
+    </a>
+    <ul class="nav-links">
+      <li><a href="#features">Features</a></li>
+      <li><a href="#platforms">Platforms</a></li>
+      <li><a href="#tech">Tech Stack</a></li>
+      <li><a href="#roadmap">Roadmap</a></li>
+      <li><a href="https://github.com/Infinite-Networker/The-All-in-One-App" target="_blank" class="nav-cta">GitHub →</a></li>
+    </ul>
+  </nav>
+
+  <!-- ─── HERO ───────────────────────────────────────────────────────── -->
+  <div class="hero">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+
+    <!-- Logo Hero Block -->
+    <div class="hero-logo">
+      <div class="hero-logo-card">
+        <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Heart -->
+          <path d="M6 18 C6 14.5 8.8 11.5 12.5 11.5 C14.9 11.5 16.8 12.9 17.5 14.8 C18.2 12.9 20.1 11.5 22.5 11.5 C26.2 11.5 29 14.5 29 18 C29 25 17.5 31 17.5 31 C17.5 31 6 25 6 18Z" fill="#13161F"/>
+          <!-- Chat bubble -->
+          <rect x="31" y="10" width="16" height="12" rx="3.5" fill="#13161F"/>
+          <polygon points="33,22 33,26.5 37.5,22" fill="#13161F"/>
+          <!-- Person -->
+          <circle cx="36" cy="34" r="5.5" fill="#13161F"/>
+          <path d="M25.5 46 C25.5 39.5 46.5 39.5 46.5 46" fill="#13161F"/>
+        </svg>
+      </div>
+      <div class="hero-logo-text">
+        <h2>The<br/>All-in-One App</h2>
+      </div>
+    </div>
+
+    <div class="badge">
+      <span class="badge-dot"></span>
+      Built by Cherry Computer Ltd.
+    </div>
+
+    <h1>
+      One Tap.<br/>
+      <span class="gradient-text">Every Platform.</span><br/>
+      Zero Friction.
+    </h1>
+
+    <p class="hero-subtitle">
+      The ultimate social media engagement app. Like, comment, and follow across
+      Instagram, X, Facebook, TikTok, LinkedIn & YouTube — all simultaneously,
+      from a single intelligent interface.
+    </p>
+
+    <div class="hero-actions">
+      <a href="https://github.com/Infinite-Networker/The-All-in-One-App" target="_blank" class="btn-primary">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+        View on GitHub
+      </a>
+      <a href="#features" class="btn-secondary">
+        Explore Features ↓
+      </a>
+    </div>
+
+    <!-- Platform Pills -->
+    <div class="platform-pills">
+      <div class="platform-pill" style="--platform-color: var(--instagram)">
+        <span class="dot"></span> Instagram
+      </div>
+      <div class="platform-pill" style="--platform-color: var(--twitter)">
+        <span class="dot"></span> X (Twitter)
+      </div>
+      <div class="platform-pill" style="--platform-color: var(--facebook)">
+        <span class="dot"></span> Facebook
+      </div>
+      <div class="platform-pill" style="--platform-color: var(--tiktok)">
+        <span class="dot"></span> TikTok
+      </div>
+      <div class="platform-pill" style="--platform-color: var(--linkedin)">
+        <span class="dot"></span> LinkedIn
+      </div>
+      <div class="platform-pill" style="--platform-color: var(--youtube)">
+        <span class="dot"></span> YouTube
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── STATS BAR ──────────────────────────────────────────────────── -->
+  <div style="padding: 0 2rem 80px; max-width: 1200px; margin: 0 auto;">
+    <div class="stats-bar reveal">
+      <div class="stat-item">
+        <span class="stat-number">6</span>
+        <span class="stat-label">Platforms Integrated</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">1</span>
+        <span class="stat-label">Tap to Engage All</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">256</span>
+        <span class="stat-label">AES-256 Encryption</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-number">0</span>
+        <span class="stat-label">Stored Raw Credentials</span>
+      </div>
+    </div>
+  </div>
+
+  <hr class="full-divider"/>
+
+  <!-- ─── FEATURES ──────────────────────────────────────────────────── -->
+  <section id="features">
+    <div class="reveal">
+      <div class="section-badge">Core Features</div>
+      <h2 class="section-title">Everything you need.<br/>Nothing you don't.</h2>
+      <p class="section-sub">
+        Engineered for digital creators, marketers, and social media managers
+        who refuse to compromise on efficiency or experience.
+      </p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card reveal">
+        <div class="feature-icon">⚡</div>
+        <h3 class="feature-title">One-Tap Universal Engagement</h3>
+        <p class="feature-desc">Like, comment, and follow across all 6 platforms simultaneously. One button replaces six separate apps and dozens of taps.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon">🔗</div>
+        <h3 class="feature-title">Multi-Platform Integration</h3>
+        <p class="feature-desc">Manage multiple accounts and identities across Instagram, X, Facebook, TikTok, LinkedIn, and YouTube in one unified interface.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon">🔄</div>
+        <h3 class="feature-title">Real-Time Content Sync</h3>
+        <p class="feature-desc">WebSocket-powered unified feed that aggregates posts instantly from all connected accounts — no manual refreshing required.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon">📊</div>
+        <h3 class="feature-title">Engagement Analytics</h3>
+        <p class="feature-desc">Visualise growth and interaction patterns with a cross-platform analytics dashboard — follower trends, engagement rates, best posting times.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon">⚙️</div>
+        <h3 class="feature-title">Custom Interaction Rules</h3>
+        <p class="feature-desc">Set per-platform engagement preferences, schedules, and filters. Automate what makes sense, stay hands-on where it matters.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon">🔐</div>
+        <h3 class="feature-title">OAuth 2.0 Security</h3>
+        <p class="feature-desc">Industry-standard OAuth 2.0 per platform. Zero raw credential storage. AES-256 encryption at rest, JWT tokens in transit.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon">🌙</div>
+        <h3 class="feature-title">Dark & Light Mode</h3>
+        <p class="feature-desc">A premium aesthetic that adapts to your preference. Every pixel designed for comfort during extended sessions.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon">🤖</div>
+        <h3 class="feature-title">AI Content Recommendations</h3>
+        <p class="feature-desc">Coming soon — AI-inferred optimal posting windows and content performance predictions based on your historical engagement data.</p>
+      </div>
+      <div class="feature-card reveal">
+        <div class="feature-icon">📅</div>
+        <h3 class="feature-title">Scheduled Posting Queue</h3>
+        <p class="feature-desc">Coming soon — plan and schedule posts across all platforms from one queue. Set it and let the engine handle delivery.</p>
+      </div>
+    </div>
+  </section>
+
+  <hr class="full-divider"/>
+
+  <!-- ─── PLATFORMS ──────────────────────────────────────────────────── -->
+  <div class="platforms-section">
+    <div class="platforms-wrapper">
+      <div class="reveal" style="text-align:center">
+        <div class="section-badge">Integrations</div>
+        <h2 class="section-title">All the platforms.<br/>One command centre.</h2>
+        <p class="section-sub" style="margin: 0 auto;">
+          Full OAuth 2.0 integration with every major social platform.
+          Each connection operates through the platform's own authentication layer —
+          your credentials never touch our servers.
+        </p>
+      </div>
+      <div class="platforms-grid reveal">
+        <div class="platform-item">
+          <div class="platform-item-icon" style="background: rgba(225,48,108,0.15);">📸</div>
+          <div class="platform-item-name" style="color: var(--instagram)">Instagram</div>
+          <div class="platform-item-desc">Photo & video feed · Stories · Reels engagement</div>
+        </div>
+        <div class="platform-item">
+          <div class="platform-item-icon" style="background: rgba(29,161,242,0.15);">🐦</div>
+          <div class="platform-item-name" style="color: var(--twitter)">X (Twitter)</div>
+          <div class="platform-item-desc">Tweets · Threads · Spaces · Real-time feed sync</div>
+        </div>
+        <div class="platform-item">
+          <div class="platform-item-icon" style="background: rgba(24,119,242,0.15);">👥</div>
+          <div class="platform-item-name" style="color: var(--facebook)">Facebook</div>
+          <div class="platform-item-desc">Posts · Groups · Pages · Reactions & comments</div>
+        </div>
+        <div class="platform-item">
+          <div class="platform-item-icon" style="background: rgba(255,0,80,0.15);">🎵</div>
+          <div class="platform-item-name" style="color: var(--tiktok)">TikTok</div>
+          <div class="platform-item-desc">Short-form video · Sounds · Creator engagement</div>
+        </div>
+        <div class="platform-item">
+          <div class="platform-item-icon" style="background: rgba(10,102,194,0.15);">💼</div>
+          <div class="platform-item-name" style="color: var(--linkedin)">LinkedIn</div>
+          <div class="platform-item-desc">Professional network · Articles · Connections</div>
+        </div>
+        <div class="platform-item">
+          <div class="platform-item-icon" style="background: rgba(255,0,0,0.15);">🎬</div>
+          <div class="platform-item-name" style="color: var(--youtube)">YouTube</div>
+          <div class="platform-item-desc">Videos · Shorts · Subscriptions · Comments</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── APP MOCKUP ─────────────────────────────────────────────────── -->
+  <section class="mockup-section">
+    <div class="reveal">
+      <div class="section-badge">App Preview</div>
+      <h2 class="section-title">Designed for the<br/>modern creator.</h2>
+      <p class="section-sub" style="margin: 0 auto;">
+        Every screen crafted with intentional minimalism, fluid micro-animations,
+        and a design system built from scratch by Cherry Computer Ltd.
+      </p>
+    </div>
+
+    <div class="phone-mockup-group reveal" style="margin-top: 3.5rem;">
+      <!-- Main phone -->
+      <div class="phone-frame" style="transform: rotate(-2deg);">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+          <div class="phone-header">
+            <div class="phone-header-title">⚡ All-in-One Feed</div>
+            <div class="phone-avatar"></div>
+          </div>
+
+          <!-- Post 1: Instagram -->
+          <div class="feed-post">
+            <div class="feed-post-header">
+              <div class="feed-post-avatar" style="background: linear-gradient(135deg,#405DE6,#FD1D1D)"></div>
+              <div class="feed-post-meta">
+                <div class="feed-post-name">@creator_studio</div>
+                <div class="feed-post-platform">📸 Instagram</div>
+              </div>
+            </div>
+            <div style="width:100%;height:72px;border-radius:6px;background:linear-gradient(135deg,#405DE6 0%,#833AB4 50%,#FD1D1D 100%);margin-bottom:8px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;">🌆</div>
+            <div class="feed-post-actions">
+              <div class="feed-action-btn">❤️ 2.4k</div>
+              <div class="feed-action-btn">💬 148</div>
+              <div class="feed-action-btn">➕ Follow</div>
+            </div>
+          </div>
+
+          <!-- Post 2: Twitter -->
+          <div class="feed-post">
+            <div class="feed-post-header">
+              <div class="feed-post-avatar" style="background: var(--twitter)"></div>
+              <div class="feed-post-meta">
+                <div class="feed-post-name">@tech_innovator</div>
+                <div class="feed-post-platform">🐦 X (Twitter)</div>
+              </div>
+            </div>
+            <div style="font-size:0.6rem;color:var(--text-secondary);margin-bottom:8px;line-height:1.5;">"The future of social media is unified. Fragmentation is a solved problem. 🧵"</div>
+            <div class="feed-post-actions">
+              <div class="feed-action-btn">❤️ 8.7k</div>
+              <div class="feed-action-btn">🔁 1.2k</div>
+              <div class="feed-action-btn">💬 342</div>
+            </div>
+          </div>
+
+          <!-- Post 3: TikTok -->
+          <div class="feed-post">
+            <div class="feed-post-header">
+              <div class="feed-post-avatar" style="background: linear-gradient(135deg,#010101,#FF0050)"></div>
+              <div class="feed-post-meta">
+                <div class="feed-post-name">@viral.moments</div>
+                <div class="feed-post-platform">🎵 TikTok</div>
+              </div>
+            </div>
+            <div style="width:100%;height:60px;border-radius:6px;background:linear-gradient(135deg,#010101 0%,#FF0050 100%);margin-bottom:8px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;">🎬</div>
+            <div class="feed-post-actions">
+              <div class="feed-action-btn">❤️ 94k</div>
+              <div class="feed-action-btn">💬 2.1k</div>
+              <div class="feed-action-btn">➕ Follow</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- One Tap Button -->
+        <div class="one-tap-btn">⚡ One Tap Engage</div>
+      </div>
+
+      <!-- Analytics phone (secondary) -->
+      <div class="phone-frame phone-secondary" style="transform: rotate(3deg);">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+          <div class="phone-header">
+            <div class="phone-header-title">📊 Analytics</div>
+            <div class="phone-avatar" style="background: linear-gradient(135deg,var(--cherry),var(--cherry-light))"></div>
+          </div>
+
+          <!-- Analytics cards -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:8px;">
+            <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center;">
+              <div style="font-size:1rem;font-weight:800;color:var(--cherry)">+24%</div>
+              <div style="font-size:0.55rem;color:var(--text-tertiary)">Engagement</div>
+            </div>
+            <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center;">
+              <div style="font-size:1rem;font-weight:800;color:#22C55E">+1.2k</div>
+              <div style="font-size:0.55rem;color:var(--text-tertiary)">New Followers</div>
+            </div>
+            <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center;">
+              <div style="font-size:1rem;font-weight:800;color:var(--twitter)">48.2k</div>
+              <div style="font-size:0.55rem;color:var(--text-tertiary)">Total Reach</div>
+            </div>
+            <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center;">
+              <div style="font-size:1rem;font-weight:800;color:#F59E0B">6/6</div>
+              <div style="font-size:0.55rem;color:var(--text-tertiary)">Platforms Live</div>
+            </div>
+          </div>
+
+          <!-- Mini bar chart -->
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px;">
+            <div style="font-size:0.6rem;font-weight:700;color:var(--text-secondary);margin-bottom:8px;">Weekly Engagement</div>
+            <div style="display:flex;gap:3px;align-items:flex-end;height:60px;">
+              <div style="flex:1;background:rgba(220,20,60,0.3);border-radius:3px;height:40%;"></div>
+              <div style="flex:1;background:rgba(220,20,60,0.5);border-radius:3px;height:60%;"></div>
+              <div style="flex:1;background:rgba(220,20,60,0.4);border-radius:3px;height:50%;"></div>
+              <div style="flex:1;background:rgba(220,20,60,0.7);border-radius:3px;height:75%;"></div>
+              <div style="flex:1;background:rgba(220,20,60,0.6);border-radius:3px;height:65%;"></div>
+              <div style="flex:1;background:var(--cherry);border-radius:3px;height:100%;"></div>
+              <div style="flex:1;background:rgba(220,20,60,0.5);border-radius:3px;height:58%;"></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;margin-top:4px;">
+              <span style="font-size:0.5rem;color:var(--text-tertiary)">Mon</span>
+              <span style="font-size:0.5rem;color:var(--text-tertiary)">Sun</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="full-divider"/>
+
+  <!-- ─── TECH STACK ─────────────────────────────────────────────────── -->
+  <section id="tech">
+    <div class="reveal">
+      <div class="section-badge">Architecture</div>
+      <h2 class="section-title">Built for scale.<br/>Designed to last.</h2>
+      <p class="section-sub">
+        A carefully chosen tech stack where every decision was intentional —
+        from the mobile framework to the encryption algorithm.
+      </p>
+    </div>
+
+    <div class="tech-stack">
+      <div class="tech-card reveal">
+        <div class="tech-card-header">
+          <div class="tech-card-icon" style="background:rgba(97,218,251,0.15);">⚛️</div>
+          <div class="tech-card-title">Frontend</div>
+        </div>
+        <div class="tech-tags">
+          <span class="tech-tag">React Native 0.73</span>
+          <span class="tech-tag">Redux Toolkit</span>
+          <span class="tech-tag">React Navigation 6</span>
+          <span class="tech-tag">Reanimated 3</span>
+          <span class="tech-tag">Gesture Handler</span>
+        </div>
+      </div>
+
+      <div class="tech-card reveal">
+        <div class="tech-card-header">
+          <div class="tech-card-icon" style="background:rgba(51,153,51,0.15);">⚙️</div>
+          <div class="tech-card-title">Backend</div>
+        </div>
+        <div class="tech-tags">
+          <span class="tech-tag">Node.js 20</span>
+          <span class="tech-tag">Express 4</span>
+          <span class="tech-tag">WebSocket</span>
+          <span class="tech-tag">Redis Cache</span>
+          <span class="tech-tag">REST API</span>
+        </div>
+      </div>
+
+      <div class="tech-card reveal">
+        <div class="tech-card-header">
+          <div class="tech-card-icon" style="background:rgba(71,162,72,0.15);">🗄️</div>
+          <div class="tech-card-title">Database</div>
+        </div>
+        <div class="tech-tags">
+          <span class="tech-tag">MongoDB 7.0</span>
+          <span class="tech-tag">Redis Sessions</span>
+          <span class="tech-tag">S3-Compatible Storage</span>
+          <span class="tech-tag">Mongoose ODM</span>
+        </div>
+      </div>
+
+      <div class="tech-card reveal">
+        <div class="tech-card-header">
+          <div class="tech-card-icon" style="background:rgba(255,102,0,0.15);">🔐</div>
+          <div class="tech-card-title">Auth & Security</div>
+        </div>
+        <div class="tech-tags">
+          <span class="tech-tag">OAuth 2.0</span>
+          <span class="tech-tag">JWT + Refresh</span>
+          <span class="tech-tag">AES-256</span>
+          <span class="tech-tag">Rate Limiting</span>
+          <span class="tech-tag">DDoS Protection</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Architecture Diagram -->
+    <div class="arch-diagram reveal">
+      <pre>
+<span class="highlight">┌─────────────────────────────────────────────────────────────────┐</span>
+<span class="highlight">│              THE ALL-IN-ONE APP  ·  SYSTEM ARCHITECTURE         │</span>
+<span class="highlight">│                      Cherry Computer Ltd.                       │</span>
+<span class="highlight">├──────────────────┬──────────────────────────────────────────────┤</span>
+<span class="dim">│</span>  MOBILE CLIENT   <span class="dim">│</span>  React Native 0.73  <span class="dim">·</span>  Redux Toolkit           <span class="dim">│</span>
+<span class="dim">│</span>                  <span class="dim">│</span>  React Navigation  <span class="dim">·</span>  Reanimated 3            <span class="dim">│</span>
+<span class="highlight">├──────────────────┼──────────────────────────────────────────────┤</span>
+<span class="dim">│</span>  API GATEWAY     <span class="dim">│</span>  Node.js 20  <span class="dim">·</span>  Express 4  <span class="dim">·</span>  WebSocket       <span class="dim">│</span>
+<span class="dim">│</span>                  <span class="dim">│</span>  Rate Limiting  <span class="dim">·</span>  JWT Auth  <span class="dim">·</span>  CORS            <span class="dim">│</span>
+<span class="highlight">├──────────────────┼──────────────────────────────────────────────┤</span>
+<span class="dim">│</span>  DATA LAYER      <span class="dim">│</span>  MongoDB 7.0 (primary)  <span class="dim">·</span>  Redis (cache)     <span class="dim">│</span>
+<span class="dim">│</span>                  <span class="dim">│</span>  S3-compatible (media)  <span class="dim">·</span>  AES-256 at rest   <span class="dim">│</span>
+<span class="highlight">├──────────────────┼──────────────────────────────────────────────┤</span>
+<span class="dim">│</span>  PLATFORM OAUTH  <span class="dim">│</span>  Instagram  <span class="dim">·</span>  X/Twitter  <span class="dim">·</span>  Facebook          <span class="dim">│</span>
+<span class="dim">│</span>                  <span class="dim">│</span>  TikTok  <span class="dim">·</span>  LinkedIn  <span class="dim">·</span>  YouTube             <span class="dim">│</span>
+<span class="highlight">└──────────────────┴──────────────────────────────────────────────┘</span>
+      </pre>
+    </div>
+  </section>
+
+  <hr class="full-divider"/>
+
+  <!-- ─── ROADMAP ────────────────────────────────────────────────────── -->
+  <section id="roadmap">
+    <div class="reveal">
+      <div class="section-badge">Roadmap</div>
+      <h2 class="section-title">Where we're going.</h2>
+      <p class="section-sub">Shipping fast. Building smart. Every feature is intentional.</p>
+    </div>
+
+    <ul class="roadmap-list">
+      <li class="roadmap-item reveal">
+        <span class="roadmap-check done">✓</span>
+        <span class="roadmap-text">Core architecture design & project scaffold</span>
+      </li>
+      <li class="roadmap-item reveal">
+        <span class="roadmap-check done">✓</span>
+        <span class="roadmap-text">OAuth 2.0 integration framework (all 6 platforms)</span>
+      </li>
+      <li class="roadmap-item reveal">
+        <span class="roadmap-check done">✓</span>
+        <span class="roadmap-text">Unified feed aggregation engine</span>
+      </li>
+      <li class="roadmap-item reveal">
+        <span class="roadmap-check done">✓</span>
+        <span class="roadmap-text">One-tap engagement engine</span>
+      </li>
+      <li class="roadmap-item reveal">
+        <span class="roadmap-check done">✓</span>
+        <span class="roadmap-text">Cross-platform analytics dashboard</span>
+      </li>
+      <li class="roadmap-item reveal">
+        <span class="roadmap-check done">✓</span>
+        <span class="roadmap-text">Dark/light mode design system</span>
+      </li>
+      <li class="roadmap-item reveal">
+        <span class="roadmap-check done">✓</span>
+        <span class="roadmap-text">AES-256 credential encryption</span>
+      </li>
+      <li class="roadmap-item reveal">
+        <span class="roadmap-check pending">○</span>
+        <span class="roadmap-text">AI-powered content recommendations</span>
+      </li>
+      <li class="roadmap-item reveal">
+        <span class="roadmap-check pending">○</span>
+        <span class="roadmap-text">Scheduled posting & queue management</span>
+      </li>
+      <li class="roadmap-item reveal">
+        <span class="roadmap-check pending">○</span>
+        <span class="roadmap-text">Team collaboration & shared workspaces</span>
+      </li>
+      <li class="roadmap-item reveal">
+        <span class="roadmap-check pending">○</span>
+        <span class="roadmap-text">Browser extension companion</span>
+      </li>
+      <li class="roadmap-item reveal">
+        <span class="roadmap-check pending">○</span>
+        <span class="roadmap-text">Desktop app (Electron)</span>
+      </li>
+    </ul>
+  </section>
+
+  <hr class="full-divider"/>
+
+  <!-- ─── FOOTER ────────────────────────────────────────────────────── -->
+  <footer>
+    <div class="footer-logo">
+      <div class="footer-logo-card">
+        <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M6 18 C6 14.5 8.8 11.5 12.5 11.5 C14.9 11.5 16.8 12.9 17.5 14.8 C18.2 12.9 20.1 11.5 22.5 11.5 C26.2 11.5 29 14.5 29 18 C29 25 17.5 31 17.5 31 C17.5 31 6 25 6 18Z" fill="#13161F"/>
+          <rect x="31" y="10" width="16" height="12" rx="3.5" fill="#13161F"/>
+          <polygon points="33,22 33,26.5 37.5,22" fill="#13161F"/>
+          <circle cx="36" cy="34" r="5.5" fill="#13161F"/>
+          <path d="M25.5 46 C25.5 39.5 46.5 39.5 46.5 46" fill="#13161F"/>
+        </svg>
+      </div>
+      <div class="footer-logo-text">
+        <h3>The All-in-One App</h3>
+        <p>by Cherry Computer Ltd.</p>
+      </div>
+    </div>
+
+    <p class="footer-tagline">
+      <em>One Tap. Every Platform. Zero Friction.</em>
+    </p>
+
+    <div class="footer-badges">
+      <div class="footer-badge">⚛️ React Native 0.73</div>
+      <div class="footer-badge">🟢 Node.js 20</div>
+      <div class="footer-badge">🍃 MongoDB 7.0</div>
+      <div class="footer-badge">🔐 OAuth 2.0</div>
+      <div class="footer-badge">📄 MIT License</div>
+    </div>
+
+    <div class="footer-divider"></div>
+
+    <div class="footer-meta">
+      <p>
+        Designed &amp; built by <strong>Dr. Ahmad Mateen Ishanzai</strong> ·
+        <a href="https://github.com/Infinite-Networker" target="_blank">Cherry Computer Ltd.</a>
+      </p>
+      <p style="margin-top:4px;">
+        Copyright © 2026 Cherry Computer Ltd. · 
+        <a href="https://github.com/Infinite-Networker/The-All-in-One-App" target="_blank">GitHub Repository</a>
+        · MIT License
+      </p>
+      <p style="margin-top: 8px; font-size: 0.75rem; color: var(--text-tertiary);">
+        This repository was created by <strong style="color: var(--text-secondary)">Cherry Computer Ltd.</strong>
+      </p>
+    </div>
+  </footer>
+
+  <!-- ─── SCROLL REVEAL JS ───────────────────────────────────────────── -->
+  <script>
+    // Scroll reveal
+    const reveals = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry, i) => {
+        if (entry.isIntersecting) {
+          setTimeout(() => {
+            entry.target.classList.add('visible');
+          }, (entry.target.dataset.delay || 0));
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
+
+    reveals.forEach((el, i) => {
+      el.style.transitionDelay = `${(i % 4) * 80}ms`;
+      observer.observe(el);
+    });
+
+    // Stat counter animation
+    const stats = document.querySelectorAll('.stat-number');
+    const countObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          countObserver.unobserve(entry.target);
+        }
+      });
+    });
+    stats.forEach(s => countObserver.observe(s));
+
+    // Nav scroll effect
+    const nav = document.querySelector('nav');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 40) {
+        nav.style.borderBottomColor = 'rgba(42,42,58,0.8)';
+      } else {
+        nav.style.borderBottomColor = 'var(--border)';
+      }
+    });
+  </script>
+</body>
+</html>
